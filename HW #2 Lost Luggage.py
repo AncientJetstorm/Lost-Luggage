@@ -70,10 +70,10 @@ def getLocation(currentLocation):
 
 # Print out the version name and tell difference
 def displayVersion():
-  print('\nThe version of Python you are using is ' + sys.version[:5])
+  print(colorama[3] + '\nThe version of Python you are using is ' + sys.version[:5])
   print('''This program supports Python 2.X and 3.X
 The only difference is the print methods, so no need to worry.
-''')
+''' + colorama[0])
 
 # Print out the help information
 def helpMe():
