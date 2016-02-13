@@ -3,7 +3,7 @@
 ## Program 2
 ## Christopher J. Neeley
 ## Date created: Feb 8, 2015
-## Date due: Feb 13, 2015
+## Date due: Feb 14, 2015
 ## PROBLEM:
 ##      Create a simulation of airline luggage.
 ##
@@ -24,23 +24,24 @@ from random import randint
 import sys
 import inspect
 
+
+# Set colors for terminal/console
+# 0 = basic color, 1 = error color, 2 = help color, 3 = output color
+colorama = ['\033[30m', '\033[31m', '\033[32m', '\033[36m', '\033[34m']
+
 # Set location instances; chance %, location name, location number
 directionalLandings = [[[3, 'LVS', 1], [6, 'SEA', 2], [9, 'HNL', 3]], [[2, 'MCI', 0],
   [7, 'SEA', 2], [9, 'HNL', 3]], [[0, 'MCI', 0], [6, 'LVS', 1], [9, 'HNL', 3]]]
 
 # Set all variables
-planeHopCount   = 0
+planeHopCount = 0
 
 pythonVersion2     = False
 continueTrials     = True
 currentlyTraveling = True
 
-# Set colors for terminal/console
-# 0 = basic color, 1 = error color, 2 = help color, 3 = output color
-colorama = ['\033[30m', '\033[31m', '\033[32m', '\033[36m']
-
 # Check Python version for print change
-# Primarily testing purposes
+# Primarily used for testing purposes
 if int(sys.version[0]) == 2:
   pythonVersion2 = True
 
@@ -91,8 +92,28 @@ def helpMe():
   print("'q' or 'quit' will exit the program.".center(100, ' ') + colorama[0])
   print('')
 
+# Check other accepted inputs
+def checkOtherInput(inputText):
+  # Display help information
+  if inputText == 'h' or inputText == 'help':
+    helpMe()
+    return None
+  # Display version information
+  elif inputText == 'v' or inputText == 'version':
+    displayVersion()
+    return None
+  # Quit program
+  elif inputText == 'q' or inputText == 'quit':
+    # Goodbye
+    print('Goodbye')
+    sys.exit(0)
+  # Return if none of the above
+  else:
+    return False
+
 # Input checking for non intergers then no accepted answers
 def isItEnglish(inputText, intOrstr):
+  otherInput = checkOtherInput(inputText)
   # Integer based only
   if intOrstr == 1:
     # Check to see if answer is a integer
@@ -109,21 +130,12 @@ def isItEnglish(inputText, intOrstr):
     # Catch error
     except ValueError:
       inputText = inputText.lower()
-      # Display help information
-      if inputText == 'h' or inputText == 'help':
-        helpMe()
-      # Display version information
-      elif inputText == 'v' or inputText == 'version':
-        displayVersion()
-      # Quit program
-      elif inputText == 'q' or inputText == 'quit':
-        # Goodbye
-        print('Goodbye')
-        sys.exit(0)
       # Return False to run again and display problem
-      else:
+      if otherInput == False:
         print(colorama[1] + 'You must enter a value greater than 0.' + colorama[0])
         return False
+      else:
+        return otherInput
   # String based
   elif intOrstr == 2:
     inputText = inputText.lower()
@@ -133,23 +145,12 @@ def isItEnglish(inputText, intOrstr):
     # Return False to not show text/quit
     elif inputText == 'n' or inputText == 'no':
       return False
-    # Display help information
-    elif inputText == 'h' or inputText == 'help':
-      helpMe()
-      return None
-    # Display version information
-    elif inputText == 'v' or inputText == 'version':
-      displayVersion()
-      return None
-    # Quit program
-    elif inputText == 'q' or inputText == 'quit':
-      # Goodbye
-      print('Goodbye')
-      sys.exit(0)
     # Return None to run again and display accepted outputs
-    else:
+    elif otherInput == False:
       print(colorama[1] + 'You must enter Y, YES, N, NO, H, Help, V, VERSION, Q, OR QUIT.' + colorama[0])
       return None
+    else:
+      return otherInput
 
 # Begin running Trials
 while continueTrials:
@@ -165,10 +166,12 @@ while continueTrials:
   while loopAmount == None or loopAmount == False:
     # Switch based on Python version
     if pythonVersion2:
-      loopAmount = isItEnglish(raw_input('How many rounds do you want to run lost luggage? '), 1)
+      loopAmount = isItEnglish(raw_input('How many rounds do you want to run lost luggage? ' + colorama[4]), 1)
     else:
-      loopAmount = isItEnglish(input('How many rounds do you want to run lost luggage? '), 1)
+      loopAmount = isItEnglish(input('How many rounds do you want to run lost luggage? ' + colorama[4]), 1)
 
+  # Reset color
+  print(colorama[0])
   # Set loopAmount to integer
   loopAmount = int(loopAmount)
 
@@ -176,10 +179,12 @@ while continueTrials:
   while showOutputText == None:
     # Switch based on Python version
     if pythonVersion2:
-      showOutputText = isItEnglish(raw_input('Do you want to output details? '), 2)
+      showOutputText = isItEnglish(raw_input('Do you want to output details? ' + colorama[4]), 2)
     else:
-      showOutputText = isItEnglish(input('Do you want to output details? '), 2)
+      showOutputText = isItEnglish(input('Do you want to output details? ' + colorama[4]), 2)
 
+  # Reset color
+  print(colorama[0])
   # Display details if wanted
   if showOutputText:
     print(colorama[3] + '\nTrials' + colorama[0] + '\n')
@@ -233,9 +238,12 @@ while continueTrials:
     if showOutputText:
       print(trialLogger)
 
+  if showOutputText:
+    print('') # For better readability print out
+
   # Print trial runs success rate and max hops.
-  print('''\nThe baggage was on time %0.2f%% of the time. (%0.f / %0.f)
-The max hops that occured was %0.f.''' % ((float(successfulHops) / float(loopAmount) * 100),
+  print('''The baggage was on time %0.2f%% of the time. (%0.f / %0.f)
+The max hops that occured was %0.f.\n''' % ((float(successfulHops) / float(loopAmount) * 100),
     successfulHops, loopAmount, maxNumberOfHops))
 
   # Reset continueTrials for rerun
@@ -245,9 +253,12 @@ The max hops that occured was %0.f.''' % ((float(successfulHops) / float(loopAmo
   while continueTrials == None:
     # Switch based on Python version
     if pythonVersion2:
-      continueTrials = isItEnglish(raw_input('Do you want to run again? '), 2)
+      continueTrials = isItEnglish(raw_input('Do you want to run again? ' + colorama[4]), 2)
     else:
-      continueTrials = isItEnglish(input('Do you want to run again? '), 2)
+      continueTrials = isItEnglish(input('Do you want to run again? ' + colorama[4]), 2)
+
+    # Reset color
+    print(colorama[0])
 
 # Goodbye
 print('Goodbye')
